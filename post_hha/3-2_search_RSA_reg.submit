@@ -1,0 +1,12 @@
+Universe       = vanilla
+Getenv         = True
+Executable     = /usr/bin/python
+RequestMemory  = 120000
+RequestCpus    = 4
+Initialdir     = /backup/data/social_actions/scripts/post_hha
+Output         = /backup/data/social_actions/logs/3-2_search_RSA_reg.out.$(Process)
+Error          = /backup/data/social_actions/logs/3-2_search_RSA_reg.err.$(Process)
+Log            = /backup/data/social_actions/logs/3-2_search_RSA_reg.log.$(Process)
+
+Arguments      = "3-2_search_RSA_reg.py"
+Queue
