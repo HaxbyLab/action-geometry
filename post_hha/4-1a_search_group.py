@@ -1,19 +1,14 @@
 # 4-1a_search_group.py
-# ran on pymoten motion Jane Han 2024.08.28. 
+# 2024 August, Jane Han
 #
 # Purpose
-# permutation & FDR 
+# [Figure 3] permutation & FDR 
 #
 # How to use
 # conda activate action-python2
 # condor_submit 4-1a_search_group.submit
-#
-# Also refer to 
-# /backup/data/social_actions/scripts/post_hha/4-1b_search_group_zdist.python
-# Note run surface_io2.py for surfplot visualization
 
-
-# import environments
+## Import environments
 import numpy as np
 from os.path import join
 from itertools import product
@@ -51,8 +46,7 @@ n_vertices = 40962
 lh_mask = np.load(join(mvpa_dir, 'cortical_mask_lh.npy'))
 rh_mask = np.load(join(mvpa_dir, 'cortical_mask_rh.npy'))
     
-#models = ['gaze', 'motion', 'nonverbs', 'verbs', 'object', 'person', 'scene', 'sociality','transitivity']
-models = ['motion']
+models = ['gaze', 'motion', 'nonverbs', 'verbs', 'object', 'person', 'scene', 'sociality','transitivity']
 
 # Load searchlight correlation data
 for model in models:
@@ -65,7 +59,7 @@ for model in models:
             dss[participant][hemi] = mv.niml.read(join(mvpa_dir, 'sl_participants','sl_{0}_{1}_p{2}.niml.dset'.format(model, hemi, participant))).samples
 
 
-    # fisher mean without permutation
+    # Fisher mean without permutation
     ds_test = {'lh': fisher_mean([np.nan_to_num(dss[p]['lh']) for p in sorted(participants.keys())], axis=0),
                'rh': fisher_mean([np.nan_to_num(dss[p]['rh']) for p in sorted(participants.keys())], axis=0)}
     
@@ -84,7 +78,7 @@ for model in models:
     null_distribution['lh'] = np.vstack(null_distribution['lh'])
     null_distribution['rh'] = np.vstack(null_distribution['rh'])
     # -----------------------
-    ## P-values for one-sided test (for searchlight RDM correlations)
+    # P-values for one-sided test (for searchlight RDM correlations)
     #one_sided = False # not expecting positive correlation between beh and neuro
     one_sided = True # expecting positive correlation between beh and neuro
     # -----------------------
@@ -102,7 +96,7 @@ for model in models:
             p_values[hemi] = left_tail + right_tail
 
 
-    ## Apply masks and compute FDR
+    # Apply masks and compute FDR
     lh_ids = np.where(lh_mask > 0)[0].tolist()
     rh_ids = np.where(rh_mask > 0)[0].tolist()
     
@@ -113,10 +107,7 @@ for model in models:
     assert combined_p.shape[1] == n_lh_ids + n_rh_ids
 
     # -----------------------
-    ## fdr correction
-    # q_values and z_values
-    # fdr = multipletests(combined_p[0, :], method='fdr_by')[1]
-    
+    # fdr correction: q_values and z_values  
     fdr = multipletests(combined_p[0, :], method='fdr_bh')[1]
     # 'by' more conservative, using more standard 'bh' here
     # -----------------------
@@ -138,9 +129,5 @@ for model in models:
         results = np.vstack((ds_test[hemi], p_values[hemi],q_values[hemi], z_values[hemi]))
         assert results.shape == (4, n_vertices)
         
-        ## save
-        #mv.niml.write(join(mvpa_dir, 'sl_post_hha_results_2sided_bh_{0}_{1}.niml.dset'.format(model, hemi)), results)
-        #mv.niml.write(join(mvpa_dir, 'sl_post_hha_results_2sided_by_{0}_{1}.niml.dset'.format(model, hemi)), results)
-        
-        #mv.niml.write(join(mvpa_dir, 'sl_post_hha_results_1sided_by_{0}_{1}.niml.dset'.format(model, hemi)), results)
-        mv.niml.write(join(mvpa_dir, 'sl_post_hha_results_1sided_bh_{0}_{1}.niml.dset'.format(model, hemi)), results) #final
+        # save
+        mv.niml.write(join(mvpa_dir, 'sl_post_hha_results_1sided_bh_{0}_{1}.niml.dset'.format(model, hemi)), results) 

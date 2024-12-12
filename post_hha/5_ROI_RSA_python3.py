@@ -1,19 +1,18 @@
 #!/usr/bin/env python
 '''
 5_ROI_RSA_python3.py
-last edit Jane Feb 13 2024
-- correct pymoten calculation: pymoten_motion_energy_rdm.npy
+2024 February, Jane Han
 
-- python3: not using pymvpa anymore
-* all 9 rois: ['EV', 'LO', 'VT', 'AIP', 'VPM', 'pSTS', 'TPJ', 'PPC', 'PMC']
+Purpose
+[Figure 4] ROI analysis
 
-* how to run this code: ssh head8, open a new tmux, activate action-python3, then run
-(action-python3) han@head8:/backup/data/social_actions/scripts/post_hha$ python ./5_ROI_RSA_python3.py
-* !!! make sure you're in the correct environment especially if you want to use the jupyter lab/notebook!
-
-* make sure you run different analyses with this code: spearman, partial_spearman
-also look into the 5_ROI_RSA_python3_regression.py for regression analysis to be run in parallel
+* how to run this code: 
+ssh head8
+activate action-python3
+python ./5_ROI_RSA_python3.py
 '''
+
+## Import environments
 from os import chdir, makedirs
 from os.path import exists, join
 from copy import deepcopy
@@ -47,9 +46,8 @@ participants = {'1': 'sid000021', '2': 'sid000120',
                 '21': 'sid000535', '22': 'sid000278',
                 '23': 'sid000052'}
 
-#rois = ['PMC']
-#rois = ['EV', 'LO', 'VT', 'AIP', 'VPM'] #hand-drawn
-rois = ['EV', 'LO', 'VT', 'AIP', 'VPM', 'pSTS', 'TPJ', 'PPC', 'PMC']# glasser 'Dorsal'-> PMC 
+
+rois = ['EV', 'LO', 'VT', 'AIP', 'VPM', 'pSTS', 'TPJ', 'PPC', 'PMC']# glasser 
 hemis = ['lh', 'rh']
 model_names = ['motion', 'gaze', 'nonverbs', 'verbs', 'transitivity', 
                'sociality', 'person', 'scene', 'object']
@@ -81,7 +79,7 @@ reorder = [10, 11, 12, 13, 14, 65, 66, 67, 68, 69, 75, 76, 77, 78, 79,
 
 sparse_ordered_labels = np.load('sparse_ordered_labels.npy') 
 
-# Load in neural data and compute RDMs
+## Load in neural data and compute RDMs
 dss = {}
 for participant_id, participant in participants.items():
     glm_dir = join(data_dir, 'afni', 'sub-'+participant)
@@ -127,7 +125,7 @@ for participant_id, participant in participants.items():
         dss[participant]['lh'][ses] = aligned_lh
         dss[participant]['rh'][ses] = aligned_rh
 
-# Compute neural RDMs per ROI
+## Compute neural RDMs per ROI
 cortical_masks = {'lh': cortical_lh, 'rh': cortical_rh}
 
 neural_rdms = {}
@@ -156,7 +154,7 @@ for roi in rois:
 
     print("Computed cross-validated RDMs for ROI {0}".format(roi))
 
-### Load in target/model RDMs
+## Load in target/model RDMs
 motion_rdm = np.load(join(scripts_dir, 'RDMs', 'pymoten_motion_energy_rdm.npy'))
 gaze_rdm = np.load(join(scripts_dir, 'RDMs', 'gaze_rdm.npy'))
 verb_rdm = np.load(join(scripts_dir, 'RDMs', 'verb_rdm.npy'))

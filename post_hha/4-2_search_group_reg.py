@@ -1,24 +1,16 @@
 # 4-2_search_group_reg.py
-# ran with all models including pymoten motion Jane Han 2024.08.29
-# ran with R2 bootstrap Jane Han 2024 Oct
+# 2024 October, Jane Han
 #
 # Purpose
-# permutation & FDR for model groups multiple regression
+# [Figure 5]permutation & FDR for model groups multiple regression
 #
 # How to use
 # ssh head8 
-# han@head8: conda activate action-python2
+# conda activate action-python2
 # python ./4-2_search_group_reg.py
-# or
-# han@head1: conda activate action-python2
-# condor_submit ./4-2_search_group_reg.submit
-#
-# reference code
-# /backup/data/social_actions/scripts/post_hha/4-1a_search_group.py
-# /backup/data/social_actions/scripts/post_hha/4-1b_search_group_zdist.py
 
 
-## import environment
+## Import environment
 import numpy as np
 from os.path import join
 from itertools import product
@@ -62,14 +54,11 @@ model_groups = {'all': [
     'transitivity', 'sociality', 'object', 'person', 'scene', 'verbs', 'nonverbs', 'gaze', 'motion']}
 #model_groups = {'control': [
 #    'object', 'person', 'scene', 'verbs', 'nonverbs', 'gaze', 'motion']}
-
-
-model_group = next(iter(model_groups))
-#model_group = 'ops'
-
 # ------------------------------------------------
+model_group = next(iter(model_groups))
 
-## calculate the mean R^2 (or square root of R^2) across subjects 
+
+# calculate the mean R^2 (or square root of R^2) across subjects 
 # only for simple visualization
         
 # load in r2
@@ -124,7 +113,6 @@ null_distribution = {'lh': [], 'rh': []}
 if sqr_r2 == True:
     # bootstrap 
     # sqr(R2) is above zero so permutation didn't work
-    # reference: 4-4-3_search_diff_reg_unique.py
     boot_distribution = {'lh': [], 'rh': []}
     participant_keys = sorted(participants.keys())
     for n, b in enumerate(np.arange(n_np)):
@@ -143,7 +131,6 @@ if sqr_r2 == True:
     
 else: 
     # bootstrap for R2
-    # reference: 4-4-3_search_diff_reg_unique.py
     boot_distribution = {'lh': [], 'rh': []}
     participant_keys = sorted(participants.keys())
     for n, b in enumerate(np.arange(n_np)):
@@ -160,25 +147,11 @@ else:
     null_distribution['lh'] = np.vstack(boot_distribution['lh']) - ds_test['lh']
     null_distribution['rh'] = np.vstack(boot_distribution['rh']) - ds_test['rh']
     
-    '''
-    # Original option: Get subject-level permutation
-    permutations = [np.random.choice([-1, 1], n_participants) for i in np.arange(n_np)]
-    for n, permutation in enumerate(permutations):
-        for hemi in hemis:
-            null_distribution[hemi].append(np.mean(
-                [sign * dss[p][hemi] 
-                 for sign, p in zip(permutation, sorted(participants.keys()))], axis=0))
-        if n % 100 == 0:
-            print("Computed {0} R2 permutation {1}".format(model_group, n))
-    
-    null_distribution['lh'] = np.vstack(null_distribution['lh'])
-    null_distribution['rh'] = np.vstack(null_distribution['rh'])
-    '''
 print("Computed non-parametric test")
 
 
 # change this part if necessary -----------------------
-## calculate p-values for one-sided test (for searchlight RDM correlations)
+# calculate p-values for one-sided test (for searchlight RDM correlations)
 one_sided = True # we ARE expecting positive correlation between beh and neuro
 #one_sided = False # not expecting positive correlation between beh and neuro
 # -----------------------------------------------------
@@ -211,11 +184,10 @@ n_rh_ids = len(rh_ids)
 combined_p = np.hstack((p_values['lh'][0, lh_ids], p_values['rh'][0, rh_ids]))[None, :]
 assert combined_p.shape[1] == n_lh_ids + n_rh_ids
 
-# caculate for fdr correction -----------------------------
+# calculate for fdr correction -----------------------------
 # for q_values and z_values
 fdr = multipletests(combined_p[0, :], method='fdr_bh')[1]
 # 'by' more conservative, using 'bh' here
-# fdr = multipletests(combined_p[0, :], method='fdr_by')[1]
 # ----------------------------------------------------------
 
 zval = np.abs(norm.ppf(fdr))
@@ -243,7 +215,6 @@ for hemi in hemis:
     else:
         mv.niml.write(
             join(mvpa_dir,
-                 'sl_post_hha_boot_1sided_bh_reg-{0}_{1}_r2.niml.dset'.format(model_group, hemi)), results)
-                 # permutation file 
-                 #'sl_post_hha_results_1sided_bh_reg-{0}_{1}_r2.niml.dset'.format(model_group, hemi)), results)
+                 'sl_post_hha_boot_1sided_bh_reg-{0}_{1}_r2.niml.dset'.format(model_group, hemi)), results) #bootstrap
+                 #'sl_post_hha_results_1sided_bh_reg-{0}_{1}_r2.niml.dset'.format(model_group, hemi)), results) #permutation
     print("Saved model {0} for hemi {1}".format(model_group, hemi))

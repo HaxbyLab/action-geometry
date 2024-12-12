@@ -1,17 +1,16 @@
 # 4-4-3_search_diff_reg_unique.py
-# Jane 2024 Sep 
+# 2024 September, Jane Han
 #
-# for non-parametric test for unique variance difference between multiple regression groups
+# Purpose
+# [Figure 6]for non-parametric test for unique variance difference between multiple regression groups
 #
 # How to run this code: 
 # ssh head8
 # conda activate action-python2
 # ./python 4-4-3_search_diff_reg_between.py
-# Note: run 4-4-2_search_diff_reg_between.py for t-test to see the difference in R^2
-# reference t-test_v2.ipynb in ./trash
 
 
-## Environment
+## Import environments
 from gifti_io import read_gifti, write_gifti
 import numpy as np
 from os.path import join
@@ -87,31 +86,11 @@ for model_group in model_groups.keys():
 print("Finished loading all model groups r2")
 
 ## non-parametric test
-# mean difference without permutation        
+# mean difference without non-parametric test  
 ds_test = {'lh': np.mean([np.nan_to_num(dss[model_full]['lh'][p] - dss[model_nested]['lh'][p]) for p in np.arange(n_participants)], axis=0),
            'rh': np.mean([np.nan_to_num(dss[model_full]['rh'][p] - dss[model_nested]['rh'][p]) for p in np.arange(n_participants)], axis=0)}
 
-'''
-# Get subject-level permutation
-# reference: 4-1a_search_group.py permutation
-n_permutations = 10000
-permutations = [np.random.choice([-1, 1], n_participants) for i in np.arange(n_permutations)]
-
-null_distribution = {'lh': [], 'rh': []}
-for n, permutation in enumerate(permutations):
-    for hemi in hemis:
-        null_distribution[hemi].append(
-            np.mean([sign * (dss[model_full][hemi][p] - dss[model_nested][hemi][p]) 
-                     for sign, p in zip(permutation, np.arange(n_participants))], axis=0))
-    if n % 100 == 0:
-        print("Finished permutation {0}".format(n))
-
-null_distribution['lh'] = np.vstack(null_distribution['lh'])
-null_distribution['rh'] = np.vstack(null_distribution['rh'])
-# muted because somehow all p-values were 0
-'''
-
-## bootstrap - sam 
+# Bootstrap 
 diff_subj = {'lh': np.array(dss[model_full]['lh']) -  np.array(dss[model_nested]['lh']),
              'rh': np.array(dss[model_full]['rh']) -  np.array(dss[model_nested]['rh'])}
 
@@ -149,9 +128,6 @@ else:
 
 
 ## Apply masks and compute FDR
-#lh_ids = np.where(cortical_masks['lh'] > 0)[0].tolist()
-#rh_ids = np.where(cortical_masks['rh'] > 0)[0].tolist()
-
 n_lh_ids = cortical_coords['lh'][0].shape[0]
 n_rh_ids = cortical_coords['rh'][0].shape[0]
 
@@ -159,10 +135,7 @@ combined_p = np.hstack((p_values['lh'][0],
                         p_values['rh'][0]))[None, :]
 assert combined_p.shape[1] == n_lh_ids + n_rh_ids
 
-## fdr correction
-# q_values and z_values
-
-# fdr = multipletests(combined_p[0, :], method='fdr_by')[1]
+## fdr correction: q_values and z_values
 fdr = multipletests(combined_p[0, :], method='fdr_bh')[1]
 # 'by' more conservative, using more standard 'bh' here
 
@@ -201,90 +174,3 @@ for hemi in hemis:
     write_gifti(results, out_f, gifti_template)
     print('saved')
     print(out_f)
-
-
-    
-    
-    
-    
-    
-'''
-# calculate t-test for model_group pairs
-model_group_pairs = list(combinations(model_groups.keys(), 2))
-
-t_results = {}
-for model_pair in model_group_pairs:
-    pair_label = "{0} - {1}".format(model_pair[0], model_pair[1]) #check correct direction
-    t_results[pair_label] = {'lh': {}, 'rh': {}}
-    for hemi in hemis:
-        # mean difference calculation
-        diff = np.vstack(dss[model_pair[0]][hemi]) - np.vstack(dss[model_pair[1]][hemi])
-        mean = np.mean(diff, axis=0)
-        
-        # t-test calculation
-        t_value, p_value = ttest_1samp(diff, 0, axis=0)
-        # [] need update: save it as gifti -> python3:ttest_1samp with 'alternative=greater' 
-        
-        # store results
-        t_results[pair_label][hemi]['mean'] = mean
-        t_results[pair_label][hemi]['t-value'] = t_value
-        t_results[pair_label][hemi]['p-value'] = p_value
-        
-    print("Finished running t-test for pair: {0}".format(pair_label))
-
-print("Finished caculating t-test for all group pairs")
-
-#FDR correction
-for model_pair in model_group_pairs:
-    pair_label = "{0} - {1}".format(model_pair[0], model_pair[1])
-    lh_width = t_results[pair_label]['lh']['p-value'].shape[0]
-    p_stack = np.hstack((t_results[pair_label]['lh']['p-value'],
-                         t_results[pair_label]['rh']['p-value']))
-    
-    # fdr caculation
-    threshold, q_value, _, _ = multipletests(p_stack, method='fdr_bh')
-    
-    # store results
-    t_results[pair_label]['lh']['threshold'] = threshold[:lh_width]
-    t_results[pair_label]['rh']['threshold'] = threshold[lh_width:]
-    t_results[pair_label]['lh']['q-value'] = q_value[:lh_width]
-    t_results[pair_label]['rh']['q-value'] = q_value[lh_width:]
-    
-    print("Finished FDR corrections for pair: {0}".format(pair_label))
-
-print("Finished FDR correction for all group pairs")
-
-#thresholded mean map
-#save it also in niml.dset
-
-convertdset = afni.ConvertDset()
-
-for model_pair in model_group_pairs: 
-    pair_label = "{0} - {1}".format(model_pair[0], model_pair[1])
-    for hemi in hemis:
-        mean_thresh = np.zeros(t_results[pair_label][hemi]['mean'].shape)
-        mean_thresh[t_results[pair_label][hemi]['threshold']] = \
-            t_results[pair_label][hemi]['mean'][t_results[pair_label][hemi]['threshold']]
-        #
-        mean_map = np.zeros(40962)
-        mean_map[cortical_coords[hemi]] = mean_thresh
-        ## save gifti
-        out_f = join(mvpa_dir, 't_test_reg_' + "{0}-{1}_r2".format(model_pair[0], model_pair[1]) + "_{0}.gii".format(hemi))
-        if sqr_r2 == True:
-            out_f = join(mvpa_dir, 't_test_reg_' + "{0}-{1}_sqrR2".format(model_pair[0], model_pair[1]) + "_{0}.gii".format(hemi))
-        print(out_f)
-        #
-        gifti_template = ('/backup/data/social_actions/fmri/pymvpa/'
-                      'sub-sid000535_ses-actions2_task-actions_'
-                      'hemi-rh_desc-hha_coef.gii') #arbitrary selection
-        write_gifti(mean_map, out_f, gifti_template)
-        ## save niml
-        convertdset.inputs.in_file = out_f
-        convertdset.inputs.out_type = 'niml_asc'
-        if sqr_r2 == True:
-            convertdset.inputs.out_file  = join(mvpa_dir, 't_test_reg_' + "{0}-{1}_sqrR2".format(model_pair[0], model_pair[1]) + "_{0}.niml.dset".format(hemi))
-        else:
-            convertdset.inputs.out_file  = join(mvpa_dir, 't_test_reg_' + "{0}-{1}_r2".format(model_pair[0], model_pair[1]) + "_{0}.niml.dset".format(hemi))
-        convertdset.cmdline
-        res = convertdset.run()
-'''
