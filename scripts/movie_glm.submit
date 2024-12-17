@@ -1,0 +1,78 @@
+Universe       = vanilla
+Getenv         = True
+Executable     = /usr/bin/python3
+RequestMemory  = 20000
+RequestCpus    = 8
+Initialdir     = /home/nastase/social_actions/fmri
+Output         = afni/logs/movie_tproject_fsaverage6.out.$(Process)
+Error          = afni/logs/movie_tproject_fsaverage6.err.$(Process)
+Log            = afni/logs/movie_tproject_fsaverage6.log.$(Process)
+
+Arguments      = "movie_glm.py sid000005"
+Queue
+
+Arguments      = "movie_glm.py sid000007"
+Queue
+
+Arguments      = "movie_glm.py sid000009"
+Queue
+
+Arguments      = "movie_glm.py sid000010"
+Queue
+
+Arguments      = "movie_glm.py sid000012"
+Queue
+
+Arguments      = "movie_glm.py sid000013"
+Queue
+
+Arguments      = "movie_glm.py sid000020"
+Queue
+
+Arguments      = "movie_glm.py sid000021"
+Queue
+
+Arguments      = "movie_glm.py sid000024"
+Queue
+
+Arguments      = "movie_glm.py sid000029"
+Queue
+
+Arguments      = "movie_glm.py sid000034"
+Queue
+
+Arguments      = "movie_glm.py sid000052"
+Queue
+
+Arguments      = "movie_glm.py sid000102"
+Queue
+
+Arguments      = "movie_glm.py sid000114"
+Queue
+
+Arguments      = "movie_glm.py sid000120"
+Queue
+
+Arguments      = "movie_glm.py sid000134"
+Queue
+
+Arguments      = "movie_glm.py sid000142"
+Queue
+
+Arguments      = "movie_glm.py sid000278"
+Queue
+
+Arguments      = "movie_glm.py sid000416"
+Queue
+
+Arguments      = "movie_glm.py sid000433"
+Queue
+
+Arguments      = "movie_glm.py sid000499"
+Queue
+
+Arguments      = "movie_glm.py sid000522"
+Queue
+
+Arguments      = "movie_glm.py sid000535"
+Queue
