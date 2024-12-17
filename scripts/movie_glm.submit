@@ -1,78 +1,78 @@
 Universe       = vanilla
 Getenv         = True
-Executable     = /usr/bin/python3
+Executable     = /usr/bin/python
 RequestMemory  = 20000
 RequestCpus    = 8
-Initialdir     = /home/nastase/social_actions/fmri
-Output         = afni/logs/movie_tproject_fsaverage6.out.$(Process)
-Error          = afni/logs/movie_tproject_fsaverage6.err.$(Process)
-Log            = afni/logs/movie_tproject_fsaverage6.log.$(Process)
+Initialdir     = /home/nastase/social_actions/scripts
+Output         = /home/nastase/social_actions/logs/movie_tproject_fsaverage6.out.$(Process)
+Error          = /home/nastase/social_actions/logs/movie_tproject_fsaverage6.err.$(Process)
+Log            = /home/nastase/social_actions/logs/movie_tproject_fsaverage6.log.$(Process)
 
-Arguments      = "movie_glm.py sid000005"
+Arguments      = "run_fmriprep.sh sid000005"
 Queue
 
-Arguments      = "movie_glm.py sid000007"
+Arguments      = "run_fmriprep.sh sid000007"
 Queue
 
-Arguments      = "movie_glm.py sid000009"
+Arguments      = "run_fmriprep.sh sid000009"
 Queue
 
-Arguments      = "movie_glm.py sid000010"
+Arguments      = "run_fmriprep.sh sid000010"
 Queue
 
-Arguments      = "movie_glm.py sid000012"
+Arguments      = "run_fmriprep.sh sid000012"
 Queue
 
-Arguments      = "movie_glm.py sid000013"
+Arguments      = "run_fmriprep.sh sid000013"
 Queue
 
-Arguments      = "movie_glm.py sid000020"
+Arguments      = "run_fmriprep.sh sid000020"
 Queue
 
-Arguments      = "movie_glm.py sid000021"
+Arguments      = "run_fmriprep.sh sid000021"
 Queue
 
-Arguments      = "movie_glm.py sid000024"
+Arguments      = "run_fmriprep.sh sid000024"
 Queue
 
-Arguments      = "movie_glm.py sid000029"
+Arguments      = "run_fmriprep.sh sid000029"
 Queue
 
-Arguments      = "movie_glm.py sid000034"
+Arguments      = "run_fmriprep.sh sid000034"
 Queue
 
-Arguments      = "movie_glm.py sid000052"
+Arguments      = "run_fmriprep.sh sid000052"
 Queue
 
-Arguments      = "movie_glm.py sid000102"
+Arguments      = "run_fmriprep.sh sid000102"
 Queue
 
-Arguments      = "movie_glm.py sid000114"
+Arguments      = "run_fmriprep.sh sid000114"
 Queue
 
-Arguments      = "movie_glm.py sid000120"
+Arguments      = "run_fmriprep.sh sid000120"
 Queue
 
-Arguments      = "movie_glm.py sid000134"
+Arguments      = "run_fmriprep.sh sid000134"
 Queue
 
-Arguments      = "movie_glm.py sid000142"
+Arguments      = "run_fmriprep.sh sid000142"
 Queue
 
-Arguments      = "movie_glm.py sid000278"
+Arguments      = "run_fmriprep.sh sid000278"
 Queue
 
-Arguments      = "movie_glm.py sid000416"
+Arguments      = "run_fmriprep.sh sid000416"
 Queue
 
-Arguments      = "movie_glm.py sid000433"
+Arguments      = "run_fmriprep.sh sid000433"
 Queue
 
-Arguments      = "movie_glm.py sid000499"
+Arguments      = "run_fmriprep.sh sid000499"
 Queue
 
-Arguments      = "movie_glm.py sid000522"
+Arguments      = "run_fmriprep.sh sid000522"
 Queue
 
-Arguments      = "movie_glm.py sid000535"
+Arguments      = "run_fmriprep.sh sid000535"
 Queue

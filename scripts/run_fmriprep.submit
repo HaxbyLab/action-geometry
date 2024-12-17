@@ -3,76 +3,40 @@ Getenv         = True
 Executable     = /bin/bash
 RequestMemory  = 20000
 RequestCpus    = 8 
-Initialdir     = /home/nastase/social_actions/fmri
-Output         = fmriprep/logs/condor_log_datalad_fmriprep.out.$(Process)
-Error          = fmriprep/logs/condor_log_datalad_fmriprep.err.$(Process)
-Log            = fmriprep/logs/condor_log_datalad_fmriprep.log.$(Process)
+Initialdir     = /home/nastase/social_actions/scripts
+Output         = /home/nastase/social_actions/logs/condor_log_fmriprep.out.$(Process)
+Error          = /home/nastase/social_actions/logs/condor_log_fmriprep.err.$(Process)
+Log            = /home/nastase/social_actions/logs/condor_log_fmriprep.log.$(Process)
 
-Arguments      = "run_fmriprep.sh sid000005"
+Arguments      = "/home/nastase/social_actions/scripts/run_fmriprep.sh as00"
 Queue
 
-Arguments      = "run_fmriprep.sh sid000007"
+Arguments      = "/home/nastase/social_actions/scripts/run_fmriprep.sh er00"
 Queue
 
-Arguments      = "run_fmriprep.sh sid000009"
+Arguments      = "/home/nastase/social_actions/scripts/run_fmriprep.sh hm00"
 Queue
 
-Arguments      = "run_fmriprep.sh sid000010"
+Arguments      = "/home/nastase/social_actions/scripts/run_fmriprep.sh jg00"
 Queue
 
-Arguments      = "run_fmriprep.sh sid000012"
+Arguments      = "/home/nastase/social_actions/scripts/run_fmriprep.sh kr00"
 Queue
 
-Arguments      = "run_fmriprep.sh sid000013"
+Arguments      = "/home/nastase/social_actions/scripts/run_fmriprep.sh ks00"
 Queue
 
-Arguments      = "run_fmriprep.sh sid000020"
+Arguments      = "/home/nastase/social_actions/scripts/run_fmriprep.sh kw00"
 Queue
 
-Arguments      = "run_fmriprep.sh sid000021"
+Arguments      = "/home/nastase/social_actions/scripts/run_fmriprep.sh lr00"
 Queue
 
-Arguments      = "run_fmriprep.sh sid000024"
+Arguments      = "/home/nastase/social_actions/scripts/run_fmriprep.sh pa00"
 Queue
 
-Arguments      = "run_fmriprep.sh sid000029"
+Arguments      = "/home/nastase/social_actions/scripts/run_fmriprep.sh sn00"
 Queue
 
-Arguments      = "run_fmriprep.sh sid000034"
-Queue
-
-Arguments      = "run_fmriprep.sh sid000052"
-Queue
-
-Arguments      = "run_fmriprep.sh sid000102"
-Queue
-
-Arguments      = "run_fmriprep.sh sid000114"
-Queue
-
-Arguments      = "run_fmriprep.sh sid000120"
-Queue
-
-Arguments      = "run_fmriprep.sh sid000134"
-Queue
-
-Arguments      = "run_fmriprep.sh sid000142"
-Queue
-
-Arguments      = "run_fmriprep.sh sid000278"
-Queue
-
-Arguments      = "run_fmriprep.sh sid000416"
-Queue
-
-Arguments      = "run_fmriprep.sh sid000433"
-Queue
-
-Arguments      = "run_fmriprep.sh sid000499"
-Queue
-
-Arguments      = "run_fmriprep.sh sid000522"
-Queue
-
-Arguments      = "run_fmriprep.sh sid000535"
+Arguments      = "/home/nastase/social_actions/scripts/run_fmriprep.sh zi00"
 Queue

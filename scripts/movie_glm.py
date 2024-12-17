@@ -1,7 +1,7 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
-# Run from ~/social_actions/fmri with something like
-# ./movie_glm.py sid000021 |& tee afni/logs/movie_glm_p1_log.txt &
+# Run from ~/social_actions/scripts with something like
+# ./movie_glm.py sid000021 |& tee ../logs/movie_glm_p1_s1_log.txt &
 
 import sys
 import json
@@ -57,7 +57,6 @@ for run in [1, 2, 3, 4]:
     keep = keep + csf_comps + wm_comps
     
     ortvec = {c: confounds[c] for c in keep}
-    ortvecs.append(ortvec)
 
     # Save confounds in 1D file for AFNI
     with open(join(glm_dir, (f'sub-{participant}_ses-raiders_task-movie_'
@@ -75,19 +74,30 @@ for run in [1, 2, 3, 4]:
         f.write('\n'.join(rows))
 
 # Concatenate ortvec time series across runs
-rall_ortvec = []
-for run_ortvec in ortvecs:
-    for tr in range(len(run_ortvec['trans_x'])):
-        tr_orts = []
-        for confound in natsorted(run_ortvec.keys()):
-            tr_orts.append(run_ortvec[confound][tr])
-        rall_ortvec.append(tr_orts)
+rall_ortvec = {}
+for confound in keep:
+    rall_ts = []
+    for run_ortvec in ortvecs:
+        rall_ts.extend(run_ortvec[confound])
+    #assert len(rall_ts) == 2140
+    rall_ortvec[confound] = rall_ts
+assert len(rall_ortvec.keys()) == len(keep)
 
 ort_fn = join(glm_dir, (f'sub-{participant}_ses-raiders_task-movie_'
                         'run-all_desc-model_regressors.1D'))
-        
+
 with open(ort_fn, 'w') as f:
-    f.writelines('\n'.join(['\t'.join(l) for l in rall_ortvec]))
+    rows = []
+    for tr in range(len(rall_ortvec[keep[0]])):
+        row = []
+        for confound in keep:
+            if rall_ortvec[confound][tr] == 'n/a':
+                row.append('0')
+            else:
+                row.append(rall_ortvec[confound][tr])
+        row = '\t'.join(row)
+        rows.append(row)
+    f.write('\n'.join(rows))
 
 # Change directory for AFNI's sanity
 chdir(glm_dir)
@@ -105,7 +115,7 @@ for hemi in ['L', 'R']:
                                f'run-{run}_space-fsaverage6_hemi-{hemi}_'
                                'desc-clean_bold.func.gii'))
     
-    call((f'3dTproject -polort 2 -TR 1.0 -input {input_fns} '
-          f'-ort {ort_fn} -prefix {output_fn}'), shell=True)
+    run(f'3dTproject -polort 2 -TR 1.0 -input {input_fns} '
+          f'-ort {ort_fn} -prefix {output_fn}', shell=True)
     print("Finished out confounds using AFNI's 3dTproject for"
           f'{participant} (hemi {hemi})')
