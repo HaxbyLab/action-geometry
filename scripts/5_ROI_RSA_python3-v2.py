@@ -1,18 +1,20 @@
 #!/usr/bin/env python
 '''
-5_ROI_RSA_python3.py
-2024 February, Jane Han
-
-Purpose
-[Figure 4] ROI analysis
+5_ROI_RSA_python3-v2.py
+last edit Jane Jul 05 2024
+* Six ROIS-v2: ['VT', 'AIP', 'VPM', 'pSTS', 'PPC', 'PMC']
+v1:'EV', 'LO', 'TPJ'
 
 * how to run this code: 
-ssh head8
-activate action-python3
-python ./5_ROI_RSA_python3.py
-'''
+ssh head8, 
+open a new tmux 
+conda activate action-python3 
+(action-python3) han@head8:/backup/data/social_actions/scripts/post_hha$ python ./5_ROI_RSA_python3-v2.py
+* !!! make sure you're in the correct environment especially if you want to use the jupyter lab/notebook!
 
-## Import environments
+* make sure you run different analyses with this code: spearman, partial_spearman
+also look into the 5_ROI_RSA_python3_regression.py for regression analysis to be run in parallel
+'''
 from os import chdir, makedirs
 from os.path import exists, join
 from copy import deepcopy
@@ -46,8 +48,9 @@ participants = {'1': 'sid000021', '2': 'sid000120',
                 '21': 'sid000535', '22': 'sid000278',
                 '23': 'sid000052'}
 
+rois = ['EV', 'LO', 'VT', 'AIP', 'VPM', 'pSTS', 'PPC', 'PMC'] #v2 #note that EV, LO same as v1
+#rois = ['EV', 'LO', 'VT', 'AIP', 'VPM', 'pSTS', 'TPJ', 'PPC', 'PMC'] #v1 
 
-rois = ['EV', 'LO', 'VT', 'AIP', 'VPM', 'pSTS', 'TPJ', 'PPC', 'PMC']# glasser 
 hemis = ['lh', 'rh']
 model_names = ['motion', 'gaze', 'nonverbs', 'verbs', 'transitivity', 
                'sociality', 'person', 'scene', 'object']
@@ -66,6 +69,8 @@ data_dir = join(base_dir, 'fmri')
 mvpa_dir = join(data_dir, 'pymvpa')
 trans_dir = join(base_dir, 'fmri', 'hha', 'transformations')
 figures_dir = join(base_dir, 'figures')
+cv_rdm_dir = join(base_dir, 'fmri', 'cv_rdm')
+
 # we deal with actions1 and actions2 separately not concat #todo!
 cortical_lh = np.load(f'{mvpa_dir}/cortical_mask_lh.npy')
 cortical_rh = np.load(f'{mvpa_dir}/cortical_mask_rh.npy')
@@ -79,7 +84,8 @@ reorder = [10, 11, 12, 13, 14, 65, 66, 67, 68, 69, 75, 76, 77, 78, 79,
 
 sparse_ordered_labels = np.load('sparse_ordered_labels.npy') 
 
-## Load in neural data and compute RDMs
+# Load in neural data and compute RDMs
+print('Loading neural data and apply HHA mapper')
 dss = {}
 for participant_id, participant in participants.items():
     glm_dir = join(data_dir, 'afni', 'sub-'+participant)
@@ -88,13 +94,14 @@ for participant_id, participant in participants.items():
     dss[participant]['rh'] = {}
     
     s = participant[3:]
+    print(f"participant {participant_id}/23")
     for ses in [1, 2]:
     ## GLM coefficients
         coef_lh_gii = nib.load(f'{data_dir}/afni/sub-sid{s}/ses-actions{ses}/func/'
                                f'sub-sid{s}_ses-actions{ses}_glm.lh.coefs_REML.gii')
         coef_rh_gii = nib.load(f'{data_dir}/afni/sub-sid{s}/ses-actions{ses}/func/'
                                f'sub-sid{s}_ses-actions{ses}_glm.rh.coefs_REML.gii')
-        print(f"Finished loading coefficients for sid{s}")
+        #print(f"Finished loading coefficients for sid{s}")
     
         coef_lh = np.vstack(coef_lh_gii.agg_data())
         coef_rh = np.vstack(coef_rh_gii.agg_data())
@@ -105,17 +112,17 @@ for participant_id, participant in participants.items():
 
         # concat both hemisphere
         coef_bh = np.hstack([coef_lh, coef_rh])
-        print(f'input data shape: {coef_bh.shape}') #(90, 74947)
+        #print(f'input data shape: {coef_bh.shape}') #(90, 74947)
 
         # z-score coefficients each vertex across stimuli
         coef_bh = zscore(coef_bh, axis=0) 
 
         # apply transformation matrix to GLM coefficient
         mapper = load_npz(f'{trans_dir}/subj{s}_mapper_all.npz')
-        print(f'loaded mapper for sid{s}')
+        #print(f'loaded mapper for sid{s}')
 
         # z-score coefficients after applying the transformation 
-        print(f"Applying HHA mapper for sid{s}")
+        #print(f"Applying HHA mapper for sid{s}")
         aligned = zscore(np.nan_to_num(coef_bh @ mapper), axis=0) 
 
         # re-split the hemisphere
@@ -125,7 +132,7 @@ for participant_id, participant in participants.items():
         dss[participant]['lh'][ses] = aligned_lh
         dss[participant]['rh'][ses] = aligned_rh
 
-## Compute neural RDMs per ROI
+# Compute neural RDMs per ROI
 cortical_masks = {'lh': cortical_lh, 'rh': cortical_rh}
 
 neural_rdms = {}
@@ -136,8 +143,9 @@ for roi in rois:
         for participant_id, participant in participants.items():
 
             # Compute cross-validated RDMs for each ROI
-            #mask = read_gifti(join(mvpa_dir, '{0}.mask_{1}.gii'.format(hemi, roi))) # hand-drawn rois 
-            mask = read_gifti(join(mvpa_dir, '{0}_mask_{1}.gii'.format(hemi, roi))) #glasser rois
+            if roi == 'EV' or roi == 'LO':
+                mask = read_gifti(join(mvpa_dir, '{0}_mask_{1}.gii'.format(hemi, roi))) #v1
+            mask = read_gifti(join(mvpa_dir, '{0}_mask_{1}-v2.gii'.format(hemi, roi))) #rois-v2: updated from rois-v1 glasser
             mask = mask[cortical_masks[hemi]]
             
             ds_roi_ses1 = dss[participant][hemi][1][:, (mask > 0)] #
@@ -151,10 +159,15 @@ for roi in rois:
             cv_rdm = np.mean(np.dstack((cv_nonsym, cv_nonsym.T)), axis=2)
             assert np.array_equal(cv_rdm, cv_rdm.T)
             neural_rdms[roi][hemi][participant_id] = cv_rdm
+            
+            # save cv_rdm
+            cv_rdm_fn = f'cv_rdm_sub-{participant}_{hemi}_{roi}-v2.npy'
+            np.save(join(cv_rdm_dir, cv_rdm_fn), cv_rdm)
+            print("Saved cv_rdm: {0}".format(cv_rdm_fn))
 
     print("Computed cross-validated RDMs for ROI {0}".format(roi))
 
-## Load in target/model RDMs
+### Load in target/model RDMs
 motion_rdm = np.load(join(scripts_dir, 'RDMs', 'pymoten_motion_energy_rdm.npy'))
 gaze_rdm = np.load(join(scripts_dir, 'RDMs', 'gaze_rdm.npy'))
 verb_rdm = np.load(join(scripts_dir, 'RDMs', 'verb_rdm.npy'))
@@ -198,8 +211,8 @@ def inter_subject_correlations(neural_rdms, roi, hemi, pairwise=True):
                          'correlation')
         assert len(roi_iscs) == (len(participants) *
                                  (len(participants) - 1) / 2)
-        print("Mean Spearman correlation = {0}, SD = {1}".format(
-                np.mean(1 - roi_iscs), np.std(1 - roi_iscs)))
+        print("{0} {1} Mean Spearman correlation = {2}, SD = {3}".format(
+                roi, hemi, np.mean(1 - roi_iscs), np.std(1 - roi_iscs)))
         return roi_iscs
 
     elif not pairwise:
@@ -213,8 +226,8 @@ def inter_subject_correlations(neural_rdms, roi, hemi, pairwise=True):
             assert len(mean_rdm) == n_pairs
             assert lo_rdm.shape == mean_rdm.shape
             roi_iscs.append(spearmanr(lo_rdm, mean_rdm)[0])
-        print("Mean spearman correlation = {0}, SD = {1}".format(
-                np.mean(roi_iscs), np.std(roi_iscs)))
+        print("{0} {1} Mean spearman correlation = {2}, SD = {3}".format(
+                roi, hemi, np.mean(roi_iscs), np.std(roi_iscs)))
         return roi_iscs
 
 # Compute Spearman correlations between target/model RDMs
@@ -294,21 +307,21 @@ def plot_percentile_RDM(rdm, square=True, reorder=False, save_fn=None, **kwargs)
 for roi in rois:
     for hemi in hemis:
         roi_iscs = inter_subject_correlations(neural_rdms, roi, hemi, pairwise=True)
-        plot_correlation_matrix(roi_iscs, save_fn=join(figures_dir, 'ISC_hyper_{0}_{1}'.format(roi, hemi)),
+        plot_correlation_matrix(roi_iscs, save_fn=join(figures_dir, 'ISC_hyper_{0}_{1}-v2'.format(roi, hemi)),
                                 xticklabels=sorted(participants.keys()),
                             yticklabels=sorted(participants.keys()))
 
 ### Inter-ROI Spearman correlations
 rois_rdm = inter_roi_correlations(neural_rdms, average_late=True)
 labels = ['{0} {1}'.format(hemi, roi) for roi in rois for hemi in ['left', 'right']]
-plot_correlation_matrix(rois_rdm, save_fn=join(figures_dir, 'inter_ROI_correlations_hyper'), 
+plot_correlation_matrix(rois_rdm, save_fn=join(figures_dir, 'inter_ROI_correlations_hyper-v2'), 
                         xticklabels=labels,
                         yticklabels=labels)
 
 # Inter-model Spearman correlations
 model_names = ['motion', 'gaze', 'nonverbs', 'verbs', 'transitivity', 'sociality','object','scene','person']
 models_rdm = inter_model_correlations(model_rdms, model_names)
-plot_correlation_matrix(models_rdm, save_fn=join(figures_dir, 'inter_model_correlations'),
+plot_correlation_matrix(models_rdm, save_fn=join(figures_dir, 'inter_model_correlations-v2'),
                         xticklabels=model_names,
                         yticklabels=model_names)
 #####    
@@ -658,7 +671,7 @@ results = bootstrap_ci(results, bootstrap_type='bootstrap_participants')
 results = bootstrap_ci(results, bootstrap_type='bootstrap_both') 
 results = wilcoxon_test(results)
 
-results = wilcoxon_model_comparison(results, save_fn=join(mvpa_dir, 'ROI_spearman_zscore_hyper_glasser_all9rois.p'))
+results = wilcoxon_model_comparison(results, save_fn=join(mvpa_dir, 'ROI_spearman_zscore_hyper_glasser-v2.p'))
 #results = wilcoxon_model_comparison(results, save_fn=join(mvpa_dir, 'ROI_spearman_zscore_hyper_glasser.p'))
 ######################################################################
 # Load pickle results
@@ -782,8 +795,8 @@ def plot_model_tests(results, roi, save_fn=None):
 
 for roi in rois:
     plot_model_tests(results, roi)
-    plot_model_tests(results, roi, save_fn=f'/backup/data/social_actions/figures/glasser_spearman_roi-{roi}_no_ceiling_9_errorbar')
+    plot_model_tests(results, roi, save_fn=f'/backup/data/social_actions/figures/glasser_spearman_roi-{roi}_no_ceiling_9_errorbar-v2')
     
-#plot_model_tests(results, roi, save_fn=f'/backup/data/social_actions/figures/glasser_spearman_roi-{roi}')
+    #plot_model_tests(results, roi, save_fn=f'/backup/data/social_actions/figures/glasser_spearman_roi-{roi}')
     #plot_model_tests(results, roi, save_fn=f'/backup/data/social_actions/figures/spearman_roi-{roi}')
     #plot_model_tests(results, roi)
