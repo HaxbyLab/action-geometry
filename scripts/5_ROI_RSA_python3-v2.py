@@ -48,7 +48,7 @@ participants = {'1': 'sid000021', '2': 'sid000120',
                 '21': 'sid000535', '22': 'sid000278',
                 '23': 'sid000052'}
 
-rois = ['EV', 'LO', 'VT', 'AIP', 'VPM', 'pSTS', 'PPC', 'PMC'] #v2 #note that EV, LO same as v1
+rois = ['EV', 'LO', 'VT', 'AIP', 'VPM', 'pSTS', 'PPC', 'PMC'] #v2 #note that EV, LO, AIP, TPJ same as v1
 #rois = ['EV', 'LO', 'VT', 'AIP', 'VPM', 'pSTS', 'TPJ', 'PPC', 'PMC'] #v1 
 
 hemis = ['lh', 'rh']
@@ -143,7 +143,8 @@ for roi in rois:
         for participant_id, participant in participants.items():
 
             # Compute cross-validated RDMs for each ROI
-            if roi == 'EV' or roi == 'LO':
+            if roi == 'EV' or roi == 'LO' or roi == 'TPJ':
+                # {hemi}_mask_AIP-v2.gii is same as {hemi}_mask_AIP.gii
                 mask = read_gifti(join(mvpa_dir, '{0}_mask_{1}.gii'.format(hemi, roi))) #v1
             mask = read_gifti(join(mvpa_dir, '{0}_mask_{1}-v2.gii'.format(hemi, roi))) #rois-v2: updated from rois-v1 glasser
             mask = mask[cortical_masks[hemi]]
