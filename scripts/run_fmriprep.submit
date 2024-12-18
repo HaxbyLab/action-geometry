@@ -1,0 +1,42 @@
+Universe       = vanilla
+Getenv         = True
+Executable     = /bin/bash
+RequestMemory  = 20000
+RequestCpus    = 8 
+Initialdir     = /home/nastase/social_actions/scripts
+Output         = /home/nastase/social_actions/logs/condor_log_fmriprep.out.$(Process)
+Error          = /home/nastase/social_actions/logs/condor_log_fmriprep.err.$(Process)
+Log            = /home/nastase/social_actions/logs/condor_log_fmriprep.log.$(Process)
+
+Arguments      = "/home/nastase/social_actions/scripts/run_fmriprep.sh as00"
+Queue
+
+Arguments      = "/home/nastase/social_actions/scripts/run_fmriprep.sh er00"
+Queue
+
+Arguments      = "/home/nastase/social_actions/scripts/run_fmriprep.sh hm00"
+Queue
+
+Arguments      = "/home/nastase/social_actions/scripts/run_fmriprep.sh jg00"
+Queue
+
+Arguments      = "/home/nastase/social_actions/scripts/run_fmriprep.sh kr00"
+Queue
+
+Arguments      = "/home/nastase/social_actions/scripts/run_fmriprep.sh ks00"
+Queue
+
+Arguments      = "/home/nastase/social_actions/scripts/run_fmriprep.sh kw00"
+Queue
+
+Arguments      = "/home/nastase/social_actions/scripts/run_fmriprep.sh lr00"
+Queue
+
+Arguments      = "/home/nastase/social_actions/scripts/run_fmriprep.sh pa00"
+Queue
+
+Arguments      = "/home/nastase/social_actions/scripts/run_fmriprep.sh sn00"
+Queue
+
+Arguments      = "/home/nastase/social_actions/scripts/run_fmriprep.sh zi00"
+Queue

@@ -1,0 +1,12 @@
+Universe       = vanilla
+Getenv         = True
+Executable     = /usr/bin/python
+RequestMemory  = 120000
+RequestCpus    = 4
+Initialdir     = /backup/data/social_actions/scripts/post_hha
+Output         = /backup/data/social_actions/logs/post_hha_search_group_final.out.$(Process)
+Error          = /backup/data/social_actions/logs/post_hha_search_group_final.err.$(Process)
+Log            = /backup/data/social_actions/logs/post_hha_search_group_final.log.$(Process)
+
+Arguments      = "4-1a_search_group.py"
+Queue

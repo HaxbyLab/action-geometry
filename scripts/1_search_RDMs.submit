@@ -1,0 +1,147 @@
+Universe       = vanilla
+Getenv         = True
+Executable     = /usr/bin/python
+RequestMemory  = 30000
+RequestCpus    = 4
+Initialdir     = /backup/data/social_actions/scripts/post_hha
+Output         = /backup/data/social_actions/logs/post_hha_search_RDMs_sq_z_10mm.out.$(Process)
+Error          = /backup/data/social_actions/logs/post_hha_search_RDMs_sq_z_10mm.err.$(Process)
+Log            = /backup/data/social_actions/logs/post_hha_search_RDMs_sq_z_10mm.log.$(Process)
+
+Arguments      = "1_search_RDMs.py 1 lh"
+Queue
+
+Arguments      = "1_search_RDMs.py 2 lh"
+Queue
+
+Arguments      = "1_search_RDMs.py 3 lh"
+Queue
+
+Arguments      = "1_search_RDMs.py 4 lh"
+Queue
+
+Arguments      = "1_search_RDMs.py 5 lh"
+Queue
+
+Arguments      = "1_search_RDMs.py 6 lh"
+Queue
+
+Arguments      = "1_search_RDMs.py 7 lh"
+Queue
+
+Arguments      = "1_search_RDMs.py 8 lh"
+Queue
+
+Arguments      = "1_search_RDMs.py 9 lh"
+Queue
+
+Arguments      = "1_search_RDMs.py 10 lh"
+Queue
+
+Arguments      = "1_search_RDMs.py 11 lh"
+Queue
+
+Arguments      = "1_search_RDMs.py 12 lh"
+Queue
+
+Arguments      = "1_search_RDMs.py 13 lh"
+Queue
+
+Arguments      = "1_search_RDMs.py 14 lh"
+Queue
+
+Arguments      = "1_search_RDMs.py 15 lh"
+Queue
+
+Arguments      = "1_search_RDMs.py 16 lh"
+Queue
+
+Arguments      = "1_search_RDMs.py 17 lh"
+Queue
+
+Arguments      = "1_search_RDMs.py 18 lh"
+Queue
+
+Arguments      = "1_search_RDMs.py 19 lh"
+Queue
+
+Arguments      = "1_search_RDMs.py 20 lh"
+Queue
+
+Arguments      = "1_search_RDMs.py 21 lh"
+Queue
+
+Arguments      = "1_search_RDMs.py 22 lh"
+Queue
+
+Arguments      = "1_search_RDMs.py 23 lh"
+Queue
+
+Arguments      = "1_search_RDMs.py 1 rh"
+Queue
+
+Arguments      = "1_search_RDMs.py 2 rh"
+Queue
+
+Arguments      = "1_search_RDMs.py 3 rh"
+Queue
+
+Arguments      = "1_search_RDMs.py 4 rh"
+Queue
+
+Arguments      = "1_search_RDMs.py 5 rh"
+Queue
+
+Arguments      = "1_search_RDMs.py 6 rh"
+Queue
+
+Arguments      = "1_search_RDMs.py 7 rh"
+Queue
+
+Arguments      = "1_search_RDMs.py 8 rh"
+Queue
+
+Arguments      = "1_search_RDMs.py 9 rh"
+Queue
+
+Arguments      = "1_search_RDMs.py 10 rh"
+Queue
+
+Arguments      = "1_search_RDMs.py 11 rh"
+Queue
+
+Arguments      = "1_search_RDMs.py 12 rh"
+Queue
+
+Arguments      = "1_search_RDMs.py 13 rh"
+Queue
+
+Arguments      = "1_search_RDMs.py 14 rh"
+Queue
+
+Arguments      = "1_search_RDMs.py 15 rh"
+Queue
+
+Arguments      = "1_search_RDMs.py 16 rh"
+Queue
+
+Arguments      = "1_search_RDMs.py 17 rh"
+Queue
+
+Arguments      = "1_search_RDMs.py 18 rh"
+Queue
+
+Arguments      = "1_search_RDMs.py 19 rh"
+Queue
+
+Arguments      = "1_search_RDMs.py 20 rh"
+Queue
+
+Arguments      = "1_search_RDMs.py 21 rh"
+Queue
+
+Arguments      = "1_search_RDMs.py 22 rh"
+Queue
+
+Arguments      = "1_search_RDMs.py 23 rh"
+Queue

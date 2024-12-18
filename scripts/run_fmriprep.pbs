@@ -1,0 +1,42 @@
+#!/bin/bash -l
+
+# Account and job name
+#PBS -N fmriprep
+
+# request the queue (enter the possible names, if omitted, default is the default)
+# this job is going to use the default
+#PBS -q default
+
+# specify account
+#PBS -A DBIC
+
+# Set up where to spit out logs
+#PBS -o /idata/DBIC/snastase/scripts/logs/fmriprep.o 
+#PBS -e /idata/DBIC/snastase/scripts/logs/fmriprep.e
+
+# request 1 node, 8 cores
+#PBS -l nodes=1:ppn=8
+
+#PBS -l walltime=20:00:00
+
+# mail is sent to you when the job starts and when it terminates or aborts 
+#PBS -m bea
+
+# specify your email address 
+
+# By default, PBS scripts execute in your home directory, not the
+# directory from which they were submitted. The following line
+# places the job in the directory from which the job was submitted. 
+cd $PBS_O_WORKDIR
+
+# SET UP SOME VARIABLES
+DATADIR="/idata/DBIC/snastase/scripts"
+
+SUBJECTS=(sid000005 sid000007 sid000009 sid000010 sid000012 sid000013 sid000020 sid000021 sid000024 sid000029 sid000034 sid000120)
+printf -v SUBJECT ${SUBJECTS[${PBS_ARRAYID}-1]} 
+
+CMD="/idata/DBIC/snastase/scripts/run_fmriprep.sh $SUBJECT"
+
+echo "Running $CMD"
+exec $CMD
+
